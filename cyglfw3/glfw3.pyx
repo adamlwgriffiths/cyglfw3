@@ -231,65 +231,158 @@ DISCONNECTED = cglfw3.GLFW_DISCONNECTED
 #
 
 cdef class Window:
-    cdef cglfw3.GLFWwindow* _c_window
+    cdef cglfw3.GLFWwindow * _this_ptr
     def __cinit__(self):
-        self._c_window = NULL
+        self._this_ptr = NULL
 
-    # TODO: add an equality operator
+    def __richcmp__(Window self, Window other, int op):
+        if op == 0:
+            # <
+            return self._this_ptr < other._this_ptr
+        elif op == 1:
+            # <=
+            return self._this_ptr <= other._this_ptr
+        elif op == 2:
+            # ==
+            return self._this_ptr == other._this_ptr
+        elif op == 3:
+            # !=
+            return self._this_ptr != other._this_ptr
+        elif op == 4:
+            # >
+            return self._this_ptr > other._this_ptr
+        elif op == 5:
+            # >=
+            return self._this_ptr >= other._this_ptr
 
 cdef class Monitor:
-    cdef cglfw3.GLFWmonitor* _c_monitor
+    cdef cglfw3.GLFWmonitor * _this_ptr
     def __cinit__(self):
-        self._c_monitor = NULL
+        self._this_ptr = NULL
+
+    def __richcmp__(Monitor self, Monitor other, int op):
+        if op == 0:
+            # <
+            return self._this_ptr < other._this_ptr
+        elif op == 1:
+            # <=
+            return self._this_ptr <= other._this_ptr
+        elif op == 2:
+            # ==
+            return self._this_ptr == other._this_ptr
+        elif op == 3:
+            # !=
+            return self._this_ptr != other._this_ptr
+        elif op == 4:
+            # >
+            return self._this_ptr > other._this_ptr
+        elif op == 5:
+            # >=
+            return self._this_ptr >= other._this_ptr
+
 
 cdef class VidMode:
-    cdef cglfw3.GLFWvidmode* _c_vidmode
+    cdef cglfw3.GLFWvidmode * _this_ptr
     def __cinit__(self):
-        self._c_vidmode = NULL
+        self._this_ptr = NULL
 
-    cdef int width(self):
-        return self._c_vidmode.width
+    property width:
+        def __get__(self):
+            return self._this_ptr.width
 
-    cdef int height(self):
-        return self._c_vidmode.width
+    property height:
+        def __get__(self):
+            return self._this_ptr.height
 
-    cdef int redBits(self):
-        return self._c_vidmode.redBits
+    property redBits:
+        def __get__(self):
+            return self._this_ptr.redBits
 
-    cdef int greenBits(self):
-        return self._c_vidmode.greenBits
+    property greenBits:
+        def __get__(self):
+            return self._this_ptr.greenBits
 
-    cdef int blueBits(self):
-        return self._c_vidmode.blueBits
+    property blueBits:
+        def __get__(self):
+            return self._this_ptr.blueBits
 
-    cdef int refreshRate(self):
-        return self._c_vidmode.refreshRate
+    property refreshRate:
+        def __get__(self):
+            return self._this_ptr.refreshRate
+
+    def __richcmp__(VidMode self, VidMode other, int op):
+        us = (self.width, self.height, self.redBits, self.greenBits, self.blueBits, self.refreshRate)
+        them = (other.width, other.height, other.redBits, other.greenBits, other.blueBits, other.refreshRate)
+        if op == 0:
+            # <
+            return us < them
+        elif op == 1:
+            # <=
+            return us <= them
+        elif op == 2:
+            # ==
+            return us == them
+        elif op == 3:
+            # !=
+            return us != them
+        elif op == 4:
+            # >
+            return us > them
+        elif op == 5:
+            # >=
+            return us >= them
 
 cdef class GammaRamp:
-    cdef cglfw3.GLFWgammaramp* _c_gammaramp
+    cdef cglfw3.GLFWgammaramp * _this_ptr
     def __cinit__(self):
-        self._c_gammaramp = NULL
+        self._this_ptr = NULL
 
-    def red(self):
-        red = [] * self._c_gammaramp.size
+    property red:
+        def __get__(self):
+            red = [] * self._this_ptr.size
 
-        for i in range(self._c_gammaramp.size):
-            red[i] = self._c_gammaramp.red[i]
-        return red
+            for i in range(self._this_ptr.size):
+                red[i] = self._this_ptr.red[i]
+            return red
 
-    def green(self):
-        green = [] * self._c_gammaramp.size
+    property green:
+        def __get__(self):
+            green = [] * self._this_ptr.size
 
-        for i in range(self._c_gammaramp.size):
-            green[i] = self._c_gammaramp.green[i]
-        return green
+            for i in range(self._this_ptr.size):
+                green[i] = self._this_ptr.green[i]
+            return green
 
-    def blue(self):
-        blue = [] * self._c_gammaramp.size
+    property blue:
+        def __get__(self):
+            blue = [] * self._this_ptr.size
 
-        for i in range(self._c_gammaramp.size):
-            blue[i] = self._c_gammaramp.blue[i]
-        return blue
+            for i in range(self._this_ptr.size):
+                blue[i] = self._this_ptr.blue[i]
+            return blue
+
+    def __richcmp__(GammaRamp self, GammaRamp other, int op):
+        us = (self.red, self.green, self.blue)
+        them = (other.red, other.green, other.blue)
+        if op == 0:
+            # <
+            return us < them
+        elif op == 1:
+            # <=
+            return us <= them
+        elif op == 2:
+            # ==
+            return us == them
+        elif op == 3:
+            # !=
+            return us != them
+        elif op == 4:
+            # >
+            return us > them
+        elif op == 5:
+            # >=
+            return us >= them
+
 
 #
 # Functions
@@ -319,53 +412,51 @@ def getMonitors():
     monitors = []
     for i in range(count):
         monitor = Monitor()
-        monitor._c_monitor = c_monitors[i]
+        monitor._this_ptr = c_monitors[i]
         monitors.append(monitor)
     return monitors
 
 def getPrimaryMonitor():
     cdef const cglfw3.GLFWmonitor* c_monitor = cglfw3.glfwGetPrimaryMonitor()
     monitor = Monitor()
-    monitor._c_monitor = c_monitor
+    monitor._this_ptr = c_monitor
     return monitor
 
 def getMonitorPos(Monitor monitor):
     cdef int x, y
-    cglfw3.glfwGetMonitorPos(monitor._c_monitor, &x, &y)
+    cglfw3.glfwGetMonitorPos(monitor._this_ptr, &x, &y)
     return x, y
 
 def getMonitorPhysicalSize(Monitor monitor):
     cdef int width, height
-    cglfw3.glfwGetMonitorPhysicalSize(monitor._c_monitor, &width, &height)
+    cglfw3.glfwGetMonitorPhysicalSize(monitor._this_ptr, &width, &height)
     return width, height
 
 def getMonitorName(Monitor monitor):
-    return cglfw3.glfwGetMonitorName(monitor._c_monitor)
+    return cglfw3.glfwGetMonitorName(monitor._this_ptr)
 
 def setMonitorCallback():
     # TODO:
     pass
 
 def getVideoModes(Monitor monitor):
-    #cdef int count
-    #cdef cglfw3.GLFWvidmode* c_vidmodes = cglfw3.glfwGetVideoModes(monitor._c_monitor, &count)
+    cdef int count
+    cdef cglfw3.GLFWvidmode* c_vidmodes = cglfw3.glfwGetVideoModes(monitor._this_ptr, &count)
 
-    #vidmodes = []
-    #for i in range(count):
-    #    vidmode = VidMode()
-    #    vidmode._c_vidmode = c_vidmodes[i]
-    #    vidmodes.append(vidmode)
-    #return vidmodes
-    # TODO:
-    pass
+    vidmodes = []
+    for i in range(count):
+        vidmode = VidMode()
+        vidmode._this_ptr = &c_vidmodes[i]
+        vidmodes.append(vidmode)
+    return vidmodes
 
 def setGamma(Monitor monitor, float gamma):
-    cglfw3.glfwSetGamma(monitor._c_monitor, gamma)
+    cglfw3.glfwSetGamma(monitor._this_ptr, gamma)
 
 def getGammaRamp(Monitor monitor):
-    cdef const cglfw3.GLFWgammaramp* c_gammaramp = cglfw3.glfwGetGammaRamp(monitor._c_monitor)
+    cdef const cglfw3.GLFWgammaramp* c_gammaramp = cglfw3.glfwGetGammaRamp(monitor._this_ptr)
     gammaramp = GammaRamp()
-    gammaramp._c_gammaramp = c_gammaramp
+    gammaramp._this_ptr = c_gammaramp
     return gammaramp
 
 def defaultWindowHints():
@@ -375,53 +466,54 @@ def windowHint(int target, int hint):
     cglfw3.glfwWindowHint(target, hint)
 
 def createWindow(int width, int height, char* title):
+    cdef cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, NULL, NULL)
     window = Window()
-    window._c_window = cglfw3.glfwCreateWindow(width, height, title, NULL, NULL)
+    window._this_ptr = c_window
     return window
 
 def destroyWindow(Window window):
-    cglfw3.glfwDestroyWindow(window._c_window)
+    cglfw3.glfwDestroyWindow(window._this_ptr)
 
 def windowShouldClose(Window window):
-    return cglfw3.glfwWindowShouldClose(window._c_window)
+    return cglfw3.glfwWindowShouldClose(window._this_ptr)
 
 def setWindowShouldClose(Window window, int value):
-    cglfw3.glfwSetWindowShouldClose(window._c_window, value)
+    cglfw3.glfwSetWindowShouldClose(window._this_ptr, value)
 
 def setWindowTitle(Window window, const char* title):
-    cglfw3.glfwSetWindowTitle(window._c_window, title)
+    cglfw3.glfwSetWindowTitle(window._this_ptr, title)
 
 def getWindowPos(Window window):
     cdef int x, y
-    cglfw3.glfwGetWindowPos(window._c_window, &x, &y)
+    cglfw3.glfwGetWindowPos(window._this_ptr, &x, &y)
     return x, y
 
 def setWindowPos(Window window, int xpos, int ypos):
-    cglfw3.glfwSetWindowPos(window._c_window, xpos, ypos)
+    cglfw3.glfwSetWindowPos(window._this_ptr, xpos, ypos)
 
 def getWindowSize(Window window):
     cdef int width, height
-    cglfw3.glfwGetWindowSize(window._c_window, &width, &height)
+    cglfw3.glfwGetWindowSize(window._this_ptr, &width, &height)
 
 def setWindowSize(Window window, int width, int height):
-    cglfw3.glfwSetWindowSize(window._c_window, width, height)
+    cglfw3.glfwSetWindowSize(window._this_ptr, width, height)
 
 def getFramebufferSize(Window window):
     cdef int width, height
-    cglfw3.glfwGetFramebufferSize(window._c_window, &width, &height)
+    cglfw3.glfwGetFramebufferSize(window._this_ptr, &width, &height)
     return width, height
 
 def iconifyWindow(Window window):
-    cglfw3.glfwIconifyWindow(window._c_window)
+    cglfw3.glfwIconifyWindow(window._this_ptr)
 
 def restoreWindow(Window window):
-    cglfw3.glfwRestoreWindow(window._c_window)
+    cglfw3.glfwRestoreWindow(window._this_ptr)
 
 def showWindow(Window window):
-    cglfw3.glfwShowWindow(window._c_window)
+    cglfw3.glfwShowWindow(window._this_ptr)
 
 def getWindowAttrib(Window window, int attrib):
-    cglfw3.glfwGetWindowAttrib(window._c_window, attrib)
+    cglfw3.glfwGetWindowAttrib(window._this_ptr, attrib)
 
 #def setWindowUserPointer(Window window, void* pointer):
 #    pass
@@ -464,24 +556,24 @@ def waitEvents():
     cglfw3.glfwWaitEvents()
 
 def getInputMode(Window window, int mode):
-    return cglfw3.glfwGetInputMode(window._c_window, mode)
+    return cglfw3.glfwGetInputMode(window._this_ptr, mode)
 
 def setInputMode(Window window, int mode, int value):
-    cglfw3.glfwSetInputMode(window._c_window, mode, value)
+    cglfw3.glfwSetInputMode(window._this_ptr, mode, value)
 
 def getKey(Window window, int key):
-    return cglfw3.glfwGetKey(window._c_window, key)
+    return cglfw3.glfwGetKey(window._this_ptr, key)
 
 def getMouseButon(Window window, int button):
-    return cglfw3.glfwGetMouseButton(window._c_window, button)
+    return cglfw3.glfwGetMouseButton(window._this_ptr, button)
 
 def getCursorPos(Window window):
     cdef double x, y
-    cglfw3.glfwGetCursorPos(window._c_window, &x, &y)
+    cglfw3.glfwGetCursorPos(window._this_ptr, &x, &y)
     return x, y
 
 def setCursorPos(Window window, double xpos, double ypos):
-    cglfw3.glfwSetCursorPos(window._c_window, xpos, ypos)
+    cglfw3.glfwSetCursorPos(window._this_ptr, xpos, ypos)
 
 def setKeyCallback():
     # TODO:
@@ -524,10 +616,10 @@ def getJoystickName(int joy):
     return str(cglfw3.glfwGetJoystickName(joy))
 
 def setClipboardString(Window window, const char* string):
-    cglfw3.glfwSetClipboardString(window._c_window, string)
+    cglfw3.glfwSetClipboardString(window._this_ptr, string)
 
 def getClipboardString(Window window):
-    return str(cglfw3.glfwGetClipboardString(window._c_window))
+    return str(cglfw3.glfwGetClipboardString(window._this_ptr))
 
 def getTime():
     return cglfw3.glfwGetTime()
@@ -536,16 +628,19 @@ def setTime(double time):
     cglfw3.glfwSetTime(time)
 
 def makeContextCurrent(Window window):
-    cglfw3.glfwMakeContextCurrent(window._c_window)
+    cglfw3.glfwMakeContextCurrent(window._this_ptr)
 
 def getCurrentContext():
-    cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwGetCurrentContext()
+    cdef const cglfw3.GLFWwindow * c_window = cglfw3.glfwGetCurrentContext()
+    if not c_window:
+        return None
+
     window = Window()
-    window._c_window = c_window
+    window._this_ptr = c_window
     return window
 
 def swapBuffers(Window window):
-    cglfw3.glfwSwapBuffers(window._c_window)
+    cglfw3.glfwSwapBuffers(window._this_ptr)
 
 def swapInterval(int interval):
     cglfw3.glfwSwapInterval(interval)
