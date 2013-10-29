@@ -224,14 +224,127 @@ CURSOR_HIDDEN = cglfw3.GLFW_CURSOR_HIDDEN
 CURSOR_DISABLED = cglfw3.GLFW_CURSOR_DISABLED
 CONNECTED = cglfw3.GLFW_CONNECTED
 DISCONNECTED = cglfw3.GLFW_DISCONNECTED
-	
+    
 
 #
 # Supplemental
 #
 
+#
+# Callbacks
+#
+
+cdef object _error_fun
+cdef void errorfun_cb(int a, const char* b):
+    global _error_fun
+    (<object>_error_fun)(a, b)
+
+cdef dict _windowposfuns = {}
+cdef void windowposfun_cb(cglfw3.GLFWwindow* a,int b,int c):
+    cb = _windowposfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _windowsizefuns = {}
+cdef void windowsizefun_cb(cglfw3.GLFWwindow* a,int b,int c):
+    cb = _windowsizefuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _windowclosefuns = {}
+cdef void windowclosefun_cb(cglfw3.GLFWwindow* a):
+    cb = _windowclosefuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window)
+
+cdef dict _windowrefreshfuns = {}
+cdef void windowrefreshfun_cb(cglfw3.GLFWwindow* a):
+    cb = _windowrefreshfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window)
+
+cdef dict _windowfocusfuns = {}
+cdef void windowfocusfun_cb(cglfw3.GLFWwindow* a,int b):
+    cb = _windowfocusfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b)
+
+cdef dict _windowiconifyfuns = {}
+cdef void windowiconifyfun_cb(cglfw3.GLFWwindow* a,int b):
+    cb = _windowiconifyfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b)
+
+cdef dict _framebuffersizefuns = {}
+cdef void framebuffersizefun_cb(cglfw3.GLFWwindow* a,int b,int c):
+    cb = _framebuffersizefuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _mousebuttonfuns = {}
+cdef void mousebuttonfun_cb(cglfw3.GLFWwindow* a,int b,int c,int d):
+    cb = _mousebuttonfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c, d)
+
+cdef dict _cursorposfuns = {}
+cdef void cursorposfun_cb(cglfw3.GLFWwindow* a,double b,double c):
+    cb = _cursorposfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _cursorenterfuns = {}
+cdef void cursorenterfun_cb(cglfw3.GLFWwindow* a,int b):
+    cb = _cursorenterfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b)
+
+cdef dict _scrollfuns = {}
+cdef void scrollfun_cb(cglfw3.GLFWwindow* a,double b,double c):
+    cb = _scrollfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _keyfuns = {}
+cdef void keyfun_cb(cglfw3.GLFWwindow* a,int b,int c,int d,int e):
+    cb = _keyfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c, d, e)
+
+cdef dict _charfuns = {}
+cdef void charfun_cb(cglfw3.GLFWwindow* a,unsigned int b):
+    cb = _charfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b)
+
+cdef object _monitorfun
+cdef void monitorfun_cb(cglfw3.GLFWmonitor* a,int b):
+    global _monitorfun
+    monitor = Monitor()
+    monitor._this_ptr = a
+    _monitorfun(monitor, b)
+
+
+#
+# Classes
+#
+
 cdef class Window:
-    cdef cglfw3.GLFWwindow * _this_ptr
+    cdef const cglfw3.GLFWwindow * _this_ptr
+
     def __cinit__(self):
         self._this_ptr = NULL
 
@@ -256,7 +369,7 @@ cdef class Window:
             return self._this_ptr >= other._this_ptr
 
 cdef class Monitor:
-    cdef cglfw3.GLFWmonitor * _this_ptr
+    cdef const cglfw3.GLFWmonitor * _this_ptr
     def __cinit__(self):
         self._this_ptr = NULL
 
@@ -282,7 +395,7 @@ cdef class Monitor:
 
 
 cdef class VidMode:
-    cdef cglfw3.GLFWvidmode * _this_ptr
+    cdef const cglfw3.GLFWvidmode * _this_ptr
     def __cinit__(self):
         self._this_ptr = NULL
 
@@ -333,7 +446,7 @@ cdef class VidMode:
             return us >= them
 
 cdef class GammaRamp:
-    cdef cglfw3.GLFWgammaramp * _this_ptr
+    cdef const cglfw3.GLFWgammaramp * _this_ptr
     def __cinit__(self):
         self._this_ptr = NULL
 
@@ -383,7 +496,6 @@ cdef class GammaRamp:
             # >=
             return us >= them
 
-
 #
 # Functions
 #
@@ -401,13 +513,15 @@ def getVersion():
 def getVersionString():
     return cglfw3.glfwGetVersionString()
 
-def setErrorCallback():
-    # TODO:
-    pass
+def setErrorCallback(cbfun):
+    global _error_fun
+    _error_fun = cbfun
+    cglfw3.glfwSetErrorCallback(errorfun_cb)
 
 def getMonitors():
     cdef int count
-    cdef const cglfw3.GLFWmonitor** c_monitors = cglfw3.glfwGetMonitors(&count)
+    cdef cglfw3.GLFWmonitor ** c_monitors = NULL
+    c_monitors = cglfw3.glfwGetMonitors(&count)
 
     monitors = []
     for i in range(count):
@@ -424,24 +538,25 @@ def getPrimaryMonitor():
 
 def getMonitorPos(Monitor monitor):
     cdef int x, y
-    cglfw3.glfwGetMonitorPos(monitor._this_ptr, &x, &y)
+    cglfw3.glfwGetMonitorPos(<cglfw3.GLFWmonitor*>monitor._this_ptr, &x, &y)
     return x, y
 
 def getMonitorPhysicalSize(Monitor monitor):
     cdef int width, height
-    cglfw3.glfwGetMonitorPhysicalSize(monitor._this_ptr, &width, &height)
+    cglfw3.glfwGetMonitorPhysicalSize(<cglfw3.GLFWmonitor*>monitor._this_ptr, &width, &height)
     return width, height
 
 def getMonitorName(Monitor monitor):
-    return cglfw3.glfwGetMonitorName(monitor._this_ptr)
+    return cglfw3.glfwGetMonitorName(<cglfw3.GLFWmonitor*>monitor._this_ptr)
 
-def setMonitorCallback():
-    # TODO:
-    pass
+def setMonitorCallback(cbfun):
+    global _monitorfun
+    _monitorfun = cbfun
+    cglfw3.glfwSetMonitorCallback(monitorfun_cb)
 
 def getVideoModes(Monitor monitor):
     cdef int count
-    cdef cglfw3.GLFWvidmode* c_vidmodes = cglfw3.glfwGetVideoModes(monitor._this_ptr, &count)
+    cdef const cglfw3.GLFWvidmode* c_vidmodes = cglfw3.glfwGetVideoModes(<cglfw3.GLFWmonitor*>monitor._this_ptr, &count)
 
     vidmodes = []
     for i in range(count):
@@ -450,11 +565,17 @@ def getVideoModes(Monitor monitor):
         vidmodes.append(vidmode)
     return vidmodes
 
+def getVideoMode(Monitor monitor):
+    cdef const cglfw3.GLFWvidmode* c_vidmode = cglfw3.glfwGetVideoMode(<cglfw3.GLFWmonitor*>monitor._this_ptr)
+    vidmode = VidMode()
+    vidmode._this_ptr = c_vidmode
+    return vidmode
+
 def setGamma(Monitor monitor, float gamma):
-    cglfw3.glfwSetGamma(monitor._this_ptr, gamma)
+    cglfw3.glfwSetGamma(<cglfw3.GLFWmonitor*>monitor._this_ptr, gamma)
 
 def getGammaRamp(Monitor monitor):
-    cdef const cglfw3.GLFWgammaramp* c_gammaramp = cglfw3.glfwGetGammaRamp(monitor._this_ptr)
+    cdef const cglfw3.GLFWgammaramp* c_gammaramp = cglfw3.glfwGetGammaRamp(<cglfw3.GLFWmonitor*>monitor._this_ptr)
     gammaramp = GammaRamp()
     gammaramp._this_ptr = c_gammaramp
     return gammaramp
@@ -466,54 +587,54 @@ def windowHint(int target, int hint):
     cglfw3.glfwWindowHint(target, hint)
 
 def createWindow(int width, int height, char* title):
-    cdef cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, NULL, NULL)
+    cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, NULL, NULL)
     window = Window()
     window._this_ptr = c_window
     return window
 
 def destroyWindow(Window window):
-    cglfw3.glfwDestroyWindow(window._this_ptr)
+    cglfw3.glfwDestroyWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def windowShouldClose(Window window):
-    return cglfw3.glfwWindowShouldClose(window._this_ptr)
+    return cglfw3.glfwWindowShouldClose(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def setWindowShouldClose(Window window, int value):
-    cglfw3.glfwSetWindowShouldClose(window._this_ptr, value)
+    cglfw3.glfwSetWindowShouldClose(<cglfw3.GLFWwindow*>window._this_ptr, value)
 
 def setWindowTitle(Window window, const char* title):
-    cglfw3.glfwSetWindowTitle(window._this_ptr, title)
+    cglfw3.glfwSetWindowTitle(<cglfw3.GLFWwindow*>window._this_ptr, title)
 
 def getWindowPos(Window window):
     cdef int x, y
-    cglfw3.glfwGetWindowPos(window._this_ptr, &x, &y)
+    cglfw3.glfwGetWindowPos(<cglfw3.GLFWwindow*>window._this_ptr, &x, &y)
     return x, y
 
 def setWindowPos(Window window, int xpos, int ypos):
-    cglfw3.glfwSetWindowPos(window._this_ptr, xpos, ypos)
+    cglfw3.glfwSetWindowPos(<cglfw3.GLFWwindow*>window._this_ptr, xpos, ypos)
 
 def getWindowSize(Window window):
     cdef int width, height
-    cglfw3.glfwGetWindowSize(window._this_ptr, &width, &height)
+    cglfw3.glfwGetWindowSize(<cglfw3.GLFWwindow*>window._this_ptr, &width, &height)
 
 def setWindowSize(Window window, int width, int height):
-    cglfw3.glfwSetWindowSize(window._this_ptr, width, height)
+    cglfw3.glfwSetWindowSize(<cglfw3.GLFWwindow*>window._this_ptr, width, height)
 
 def getFramebufferSize(Window window):
     cdef int width, height
-    cglfw3.glfwGetFramebufferSize(window._this_ptr, &width, &height)
+    cglfw3.glfwGetFramebufferSize(<cglfw3.GLFWwindow*>window._this_ptr, &width, &height)
     return width, height
 
 def iconifyWindow(Window window):
-    cglfw3.glfwIconifyWindow(window._this_ptr)
+    cglfw3.glfwIconifyWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def restoreWindow(Window window):
-    cglfw3.glfwRestoreWindow(window._this_ptr)
+    cglfw3.glfwRestoreWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def showWindow(Window window):
-    cglfw3.glfwShowWindow(window._this_ptr)
+    cglfw3.glfwShowWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def getWindowAttrib(Window window, int attrib):
-    cglfw3.glfwGetWindowAttrib(window._this_ptr, attrib)
+    cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
 
 #def setWindowUserPointer(Window window, void* pointer):
 #    pass
@@ -521,33 +642,40 @@ def getWindowAttrib(Window window, int attrib):
 #def getWindowUserPointer(Window window):
 #    pass
 
-def setWindowPosCallback():
-    # TODO:
-    pass
+def setWindowPosCallback(Window window, cbfun):
+    global _windowposfuns
+    _windowposfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowPosCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowposfun_cb)
 
-def setWindowSizeCallback():
-    # TODO:
-    pass
+def setWindowSizeCallback(Window window, cbfun):
+    global _windowsizefuns
+    _windowsizefuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowSizeCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowsizefun_cb)
 
-def setWindowCloseCallback():
-    # TODO:
-    pass
+def setWindowCloseCallback(Window window, cbfun):
+    global _windowclosefuns
+    _windowclosefuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowCloseCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowclosefun_cb)
 
-def setWindowRefreshCallback():
-    # TODO:
-    pass
+def setWindowRefreshCallback(Window window, cbfun):
+    global _windowrefreshfuns
+    _windowrefreshfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowRefreshCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowrefreshfun_cb)
 
-def setWindowFocusCallback():
-    # TODO:
-    pass
+def setWindowFocusCallback(Window window, cbfun):
+    global _windowfocusfuns
+    _windowfocusfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowFocusCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowfocusfun_cb)
 
-def setWindowIconifyCallback():
-    # TODO:
-    pass
+def setWindowIconifyCallback(Window window, cbfun):
+    global _windowiconifyfuns
+    _windowiconifyfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetWindowIconifyCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowiconifyfun_cb)
 
-def setFramebuferSizeCallback():
-    # TODO:
-    pass
+def setFramebuferSizeCallback(Window window, cbfun):
+    global _framebuffersize
+    _framebuffersizefuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetFramebufferSizeCallback(<cglfw3.GLFWwindow*>window._this_ptr, framebuffersizefun_cb)
 
 def pollEvents():
     cglfw3.glfwPollEvents()
@@ -556,44 +684,49 @@ def waitEvents():
     cglfw3.glfwWaitEvents()
 
 def getInputMode(Window window, int mode):
-    return cglfw3.glfwGetInputMode(window._this_ptr, mode)
+    return cglfw3.glfwGetInputMode(<cglfw3.GLFWwindow*>window._this_ptr, mode)
 
 def setInputMode(Window window, int mode, int value):
-    cglfw3.glfwSetInputMode(window._this_ptr, mode, value)
+    cglfw3.glfwSetInputMode(<cglfw3.GLFWwindow*>window._this_ptr, mode, value)
 
 def getKey(Window window, int key):
-    return cglfw3.glfwGetKey(window._this_ptr, key)
+    return cglfw3.glfwGetKey(<cglfw3.GLFWwindow*>window._this_ptr, key)
 
 def getMouseButon(Window window, int button):
-    return cglfw3.glfwGetMouseButton(window._this_ptr, button)
+    return cglfw3.glfwGetMouseButton(<cglfw3.GLFWwindow*>window._this_ptr, button)
 
 def getCursorPos(Window window):
     cdef double x, y
-    cglfw3.glfwGetCursorPos(window._this_ptr, &x, &y)
+    cglfw3.glfwGetCursorPos(<cglfw3.GLFWwindow*>window._this_ptr, &x, &y)
     return x, y
 
 def setCursorPos(Window window, double xpos, double ypos):
-    cglfw3.glfwSetCursorPos(window._this_ptr, xpos, ypos)
+    cglfw3.glfwSetCursorPos(<cglfw3.GLFWwindow*>window._this_ptr, xpos, ypos)
 
-def setKeyCallback():
-    # TODO:
-    pass
+def setKeyCallback(Window window, cbfun):
+    global _keyfuns
+    _keyfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetKeyCallback(<cglfw3.GLFWwindow*>window._this_ptr, keyfun_cb)
 
-def setCharCallback():
-    # TODO:
-    pass
+def setCharCallback(Window window, cbfun):
+    global _charfuns
+    _charfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCharCallback(<cglfw3.GLFWwindow*>window._this_ptr, charfun_cb)
 
-def setMouseButtonCallback():
-    # TODO:
-    pass
+def setMouseButtonCallback(Window window, cbfun):
+    global _mousebuttonfuns
+    _mousebuttonfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetMouseButtonCallback(<cglfw3.GLFWwindow*>window._this_ptr, mousebuttonfun_cb)
 
-def setCursorEnterCallback():
-    # TODO:
-    pass
+def setCursorEnterCallback(Window window, cbfun):
+    global _cursorenterfuns
+    _cursorenterfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCursorEnterCallback(<cglfw3.GLFWwindow*>window._this_ptr, cursorenterfun_cb)
 
-def setScrollCallback():
-    # TODO:
-    pass
+def setScrollCallback(Window window, cbfun):
+    global _scrollfuns
+    _scrollfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetScrollCallback(<cglfw3.GLFWwindow*>window._this_ptr, scrollfun_cb)
 
 def joystickPresent(int joy):
     return cglfw3.glfwJoystickPresent(joy)
@@ -616,10 +749,10 @@ def getJoystickName(int joy):
     return str(cglfw3.glfwGetJoystickName(joy))
 
 def setClipboardString(Window window, const char* string):
-    cglfw3.glfwSetClipboardString(window._this_ptr, string)
+    cglfw3.glfwSetClipboardString(<cglfw3.GLFWwindow*>window._this_ptr, string)
 
 def getClipboardString(Window window):
-    return str(cglfw3.glfwGetClipboardString(window._this_ptr))
+    return str(cglfw3.glfwGetClipboardString(<cglfw3.GLFWwindow*>window._this_ptr))
 
 def getTime():
     return cglfw3.glfwGetTime()
@@ -628,7 +761,7 @@ def setTime(double time):
     cglfw3.glfwSetTime(time)
 
 def makeContextCurrent(Window window):
-    cglfw3.glfwMakeContextCurrent(window._this_ptr)
+    cglfw3.glfwMakeContextCurrent(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def getCurrentContext():
     cdef const cglfw3.GLFWwindow * c_window = cglfw3.glfwGetCurrentContext()
@@ -640,7 +773,7 @@ def getCurrentContext():
     return window
 
 def swapBuffers(Window window):
-    cglfw3.glfwSwapBuffers(window._this_ptr)
+    cglfw3.glfwSwapBuffers(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def swapInterval(int interval):
     cglfw3.glfwSwapInterval(interval)
@@ -649,6 +782,5 @@ def extensionSupported(const char* extension):
     return cglfw3.glfwExtensionSupported(extension)
 
 def getProcAddress(const char* procname):
-    # TODO:
-    pass
+    return <size_t>cglfw3.glfwGetProcAddress(procname)
 
