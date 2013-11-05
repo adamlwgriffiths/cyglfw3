@@ -5,6 +5,17 @@ from setuptools.dist import Distribution
 requires = ['Cython']
 packages = ['cyglfw3']
 
+# auto-install cython
+Distribution(dict(setup_requires='Cython'))
+
+# check cython is installed
+try:
+    from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
+except ImportError:
+    print("Could not import Cython. Install `cython` and rerun.")
+    sys.exit(1)
+
 # set the GLFW compiler flags
 extra_compile_args = []
 extra_link_args = []
