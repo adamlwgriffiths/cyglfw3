@@ -1,43 +1,40 @@
 import sys
-from distutils.core import setup
-from distutils.extension import Extension
-
-from Cython.Distutils import build_ext
-from Cython.Build import cythonize
-"""
-# auto-install cython
+from setuptools import setup, Extension
 from setuptools.dist import Distribution
+
+# auto-install cython
 Distribution(dict(setup_requires='Cython'))
 
 # check cython is installed
 try:
     from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
 except ImportError:
-    print("Could not import Cython.Distutils. Install `cython` and rerun.")
+    print("Could not import Cython. Install `cython` and rerun.")
     sys.exit(1)
-"""
+
 # set the GLFW compiler flags
 extra_compile_args = []
 extra_link_args = []
-if 'darwin' in sys.platform:
-    # check for homebrew
+
+platform = sys.platform.lower()
+if 'darwin' in platform or 'linux' in platform:
+    # check for homebrew or local installations on unix systems
     extra_compile_args.append('-I/usr/local/include')
     extra_link_args.append('-L/usr/local/lib')
 
+glfw_lib = 'glfw'
+if 'darwin' in platform:
+    # homebrew calls it libglfw3
+    glwf_lib = 'glfw3'
+
+
 ext_modules = [
-    Extension('cyglfw3.glfw3', ['cyglfw3/glfw3.pyx'], libraries=['glfw3'],
+    Extension('cyglfw3.glfw3', ['cyglfw3/glfw3.pyx'], libraries=[glwf_lib],
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args
     )
 ]
-"""
-ext_modules = [
-    Extension('glfw3', ['glfw3.pyx'], libraries=['glfw3'],
-        extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args
-    )
-]
-"""
 ext_modules = cythonize(ext_modules)
 
 setup(
