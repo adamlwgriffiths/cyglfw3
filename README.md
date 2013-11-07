@@ -48,25 +48,25 @@ except:
   pass
 
 import cyglfw3 as glfw
-if not glfw.init():
+if not glfw.Init():
     exit()
 
 window = glfw.createWindow(640, 480, 'Hello World')
 if not window:
-    glfw.terminate()
+    glfw.Terminate()
     exit()
 
-glfw.makeContextCurrent(window)
-while not glfw.windowShouldClose(window):
+glfw.MakeContextCurrent(window)
+while not glfw.WindowShouldClose(window):
     # Render here
 
     # Swap front and back buffers
-    glfw.swapBuffers(window)
+    glfw.SwapBuffers(window)
 
     # Poll for and process events
-    glfw.pollEvents()
+    glfw.PollEvents()
 
-glfw.terminate()
+glfw.Terminate()
 ```
 
 
