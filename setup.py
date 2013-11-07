@@ -44,11 +44,17 @@ ext_modules = [
 ]
 ext_modules = cythonize(ext_modules)
 
+# import the README
+with open('README.rst') as f:
+    long_description = f.read()
+
 
 setup(
     name="cyglfw3",
     version='0.0.1',
     description="Python bindings for GLFW 3+ using Cython",
+    long_description=long_description,
+    license = 'BSD',
     author="Adam Griffiths",
     author_email="adam.lw.griffiths@gmail.com",
     install_requires=['Cython'],
@@ -56,6 +62,7 @@ setup(
     packages=['cyglfw3'],
     cmdclass={'build_ext': build_ext},
     ext_modules=ext_modules,
+    platforms=['any'],
     classifiers=(
         'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
