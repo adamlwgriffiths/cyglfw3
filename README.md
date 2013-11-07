@@ -51,7 +51,7 @@ import cyglfw3 as glfw
 if not glfw.Init():
     exit()
 
-window = glfw.createWindow(640, 480, 'Hello World')
+window = glfw.CreateWindow(640, 480, 'Hello World')
 if not window:
     glfw.Terminate()
     exit()
