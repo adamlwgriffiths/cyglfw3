@@ -1,3 +1,4 @@
+import os.path
 import sys
 from setuptools import setup, Extension
 from setuptools.dist import Distribution
@@ -23,10 +24,15 @@ if 'darwin' in platform or 'linux' in platform:
     extra_compile_args.append('-I/usr/local/include')
     extra_link_args.append('-L/usr/local/lib')
 
+    # support macports
+    extra_compile_args.append('-I/opt/local/include')
+    extra_compile_args.append('-I/opt/local/lib')
+
 glfw_lib = 'glfw'
 if 'darwin' in platform:
     # homebrew calls it libglfw3
-    glwf_lib = 'glfw3'
+    if os.path.exists('/usr/local/lib/libglfw3.dylib'):
+        glwf_lib = 'glfw3'
 
 ext_modules = [
     Extension('cyglfw3.glfw3', 

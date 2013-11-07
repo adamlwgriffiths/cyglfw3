@@ -72,8 +72,7 @@ glfw.Terminate()
 
 ##Building
 
-CyGLFW has only been tested on OS-X.
-Please provide any errors so more platforms can be supported.
+If you have trouble building CyGLFW3, please raise an issue on Github.
 
 When specifying the include path, ensure that the GLFW directory is a sub-directory
 of that path.
@@ -84,7 +83,9 @@ The lib path should contain the glfw library file.
 
 ### OS-X / Linux
 
-The setup.py script add's includes for homebrew's GLFW location (/usr/local/include and /usr/local/lib)
+CyGLFW3 provides support for OS-X Homebrew and MacPorts.
+
+Linux builds should work with any package manager.
 
 ```
 python setup.py build_ext -i
@@ -92,7 +93,7 @@ python setup.py build_ext -i
 
 Specifying an alternate GLFW installation path:
 ```
-env CPATH=<path to headers> LIBRARY_PATH=<path to lib> python setup.py build_ext -i
+env CPATH=<include path> LIBRARY_PATH=<lib path> python setup.py build_ext -i
 ```
 
 ### Windows
