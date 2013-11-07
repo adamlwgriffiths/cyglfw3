@@ -60,7 +60,9 @@ setup(
     install_requires=['Cython'],
     url='http://github.com/adamlwgriffiths/cyglfw3',
     packages=['cyglfw3'],
+    package_data={'cyglfw3':['*.pyx', '*.pxd', '*.c']},
     cmdclass={'build_ext': build_ext},
+    requires=['cython'],
     ext_modules=ext_modules,
     platforms=['any'],
     classifiers=(
