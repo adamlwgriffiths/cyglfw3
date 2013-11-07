@@ -13,7 +13,10 @@ the GLFW coding style remaining consistent.
 Changes to the GLFW coding style may break this code.
 """
 
+import os.path
 import re
+
+cyglfw3_directory = os.path.join(os.path.dirname(__file__), '..', 'cyglfw3')
 
 header_string = """
 #
@@ -83,9 +86,24 @@ def functions(lines):
             yield ret, name, parameters
 
 
+header_paths = [
+    # homebrew
+    '/usr/local/include/GLFW/glfw3.h',
+    # macports
+    '/opt/local/include/GLFW/glfw3.h'
+    # linux
+    '/usr/include/GLFW/glfw3.h'
+]
 
+header = None
+for path in header_paths:
+    if os.path.exists(path):
+        header = path
+        break
 
-header = '/usr/local/include/GLFW/glfw3.h'
+if not header:
+    raise ValueError('Unable to find GLFW header, please raise an issue at https://github.com/adamlwgriffiths/cyglfw3/issues')
+
 strip_regexp = re.compile(r'/\*.*?\*/', flags=re.DOTALL)
 with open(header, 'r') as f:
     text = f.read()
@@ -102,7 +120,7 @@ pxd_supplemental = """
 
 
 def generate_pxd():
-    pxd_filename = 'cyglfw3/cglfw3.pxd'
+    pxd_filename = os.path.join(cyglfw3_directory, 'cglfw3.pxd')
     pxd_lines = []
 
     pxd_lines += header_string.split('\n')
@@ -721,7 +739,7 @@ strip_define_regexp = re.compile(r'GLFW_')
 strip_function_regexp = re.compile(r'glfw')
 
 def generate_pyx():
-    pyx_filename = 'cyglfw3/glfw3.pyx'
+    pyx_filename = os.path.join(cyglfw3_directory, 'glfw3.pyx')
     pyx_lines = []
 
     pyx_lines += header_string.split('\n')
