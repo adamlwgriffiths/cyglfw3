@@ -41,8 +41,12 @@ int main(void)
 ##Python Code
 
 ```
-# glfw won't load without NSApp
-from AppKit import NSApp, NSApplication
+# needed if you're running the OS-X system python
+try:
+  from AppKit import NSApp, NSApplication
+except:
+  pass
+
 import cyglfw3 as glfw
 if not glfw.init():
     exit()
@@ -64,6 +68,7 @@ while not glfw.windowShouldClose(window):
 
 glfw.terminate()
 ```
+
 
 ##Building
 
