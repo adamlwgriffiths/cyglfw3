@@ -90,9 +90,9 @@ header_paths = [
     # homebrew
     '/usr/local/include/GLFW/glfw3.h',
     # macports
-    '/opt/local/include/GLFW/glfw3.h'
+    '/opt/local/include/GLFW/glfw3.h',
     # linux
-    '/usr/include/GLFW/glfw3.h'
+    '/usr/include/GLFW/glfw3.h',
 ]
 
 header = None
