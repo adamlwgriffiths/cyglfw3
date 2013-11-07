@@ -57,7 +57,7 @@ setup(
     cmdclass={'build_ext': build_ext},
     ext_modules=ext_modules,
     classifiers=(
-        'Development Status :: 2 - Alpha',
+        'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
         'Intended Audience :: Developers',
         'Operating System :: MacOS :: MacOS X',
@@ -65,7 +65,6 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python',
         'Topic :: Multimedia :: Graphics',
-        'Topic :: Multimedia :: Graphics :: 2D Rendering',
         'Topic :: Multimedia :: Graphics :: 3D Rendering',
         'License :: OSI Approved :: BSD License',
         'Topic :: Software Development :: Libraries',
