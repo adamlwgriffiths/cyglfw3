@@ -2,9 +2,6 @@ import sys
 from setuptools import setup, Extension
 from setuptools.dist import Distribution
 
-requires = ['Cython']
-packages = ['cyglfw3']
-
 # auto-install cython
 Distribution(dict(setup_requires='Cython'))
 
@@ -41,24 +38,31 @@ ext_modules = [
 ]
 ext_modules = cythonize(ext_modules)
 
-setup_dict = dict(
+
+setup(
     name="cyglfw3",
     version='0.0.1',
     description="Python bindings for GLFW 3+ using Cython",
     author="Adam Griffiths",
     author_email="adam.lw.griffiths@gmail.com",
-    install_requires=requires,
+    install_requires=['Cython'],
     url='http://github.com/adamlwgriffiths/cyglfw3',
-    packages=packages,
+    packages=['cyglfw3'],
     cmdclass={'build_ext': build_ext},
     ext_modules=ext_modules,
     classifiers=(
         'Development Status :: 2 - Alpha',
-        'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: ??',
+        'Intended Audience :: Developers',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
         'Programming Language :: Python',
+        'Topic :: Multimedia :: Graphics',
+        'Topic :: Multimedia :: Graphics :: 2D Rendering',
+        'Topic :: Multimedia :: Graphics :: 3D Rendering',
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ),
 )
-
-setup(**setup_dict)
