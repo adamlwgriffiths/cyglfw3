@@ -32,12 +32,12 @@ glfw_lib = 'glfw'
 if 'darwin' in platform:
     # homebrew calls it libglfw3
     if os.path.exists('/usr/local/lib/libglfw3.dylib'):
-        glwf_lib = 'glfw3'
+        glfw_lib = 'glfw3'
 
 ext_modules = [
     Extension('cyglfw3.glfw3', 
         ['cyglfw3/glfw3.pyx'], 
-        libraries=[glwf_lib],
+        libraries=[glfw_lib],
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args
     )
