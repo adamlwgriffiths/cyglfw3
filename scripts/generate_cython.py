@@ -648,7 +648,7 @@ def GetCursorPos(Window window):
     cglfw3.glfwGetCursorPos(<cglfw3.GLFWwindow*>window._this_ptr, &x, &y)
     return x, y
 
-def GetCursorPos(Window window, double xpos, double ypos):
+def SetCursorPos(Window window, double xpos, double ypos):
     cglfw3.glfwSetCursorPos(<cglfw3.GLFWwindow*>window._this_ptr, xpos, ypos)
 
 def SetKeyCallback(Window window, cbfun):
