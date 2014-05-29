@@ -1,7 +1,9 @@
-*.py[cod]
-
-# C extensions
+# cython files
 *.so
+build/
+cyglfw3/*.c
+
+*.py[co]
 
 # Packages
 *.egg
@@ -33,7 +35,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-
-
-# data directories
-tests/*/data/*/output
