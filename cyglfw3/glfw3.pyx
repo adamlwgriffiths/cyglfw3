@@ -641,7 +641,7 @@ def showWindow(Window window):
     cglfw3.glfwShowWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def getWindowAttrib(Window window, int attrib):
-    cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
+    return cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
 
 #def setWindowUserPointer(Window window, void* pointer):
 #    pass
@@ -679,7 +679,7 @@ def setWindowIconifyCallback(Window window, cbfun):
     _windowiconifyfuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetWindowIconifyCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowiconifyfun_cb)
 
-def setFramebuferSizeCallback(Window window, cbfun):
+def setFramebufferSizeCallback(Window window, cbfun):
     global _framebuffersize
     _framebuffersizefuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetFramebufferSizeCallback(<cglfw3.GLFWwindow*>window._this_ptr, framebuffersizefun_cb)
@@ -750,7 +750,11 @@ def getJoystickAxes(int joy):
 def getJoystickButtons(int joy):
     cdef int count
     cdef const unsigned char* c_buttons = cglfw3.glfwGetJoystickButtons(joy, &count)
-    return str(c_buttons)
+    buttons = [
+        int(c_buttons[i])
+        for i in range(count)
+    ]
+    return buttons
 
 def getJoystickName(int joy):
     return str(cglfw3.glfwGetJoystickName(joy))

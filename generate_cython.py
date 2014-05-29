@@ -571,7 +571,7 @@ def showWindow(Window window):
     cglfw3.glfwShowWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
 def getWindowAttrib(Window window, int attrib):
-    cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
+    return cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
 
 #def setWindowUserPointer(Window window, void* pointer):
 #    pass
@@ -680,7 +680,11 @@ def getJoystickAxes(int joy):
 def getJoystickButtons(int joy):
     cdef int count
     cdef const unsigned char* c_buttons = cglfw3.glfwGetJoystickButtons(joy, &count)
-    return str(c_buttons)
+    buttons = [
+        int(c_buttons[i])
+        for i in range(count)
+    ]
+    return buttons
 
 def getJoystickName(int joy):
     return str(cglfw3.glfwGetJoystickName(joy))
