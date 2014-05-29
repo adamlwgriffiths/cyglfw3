@@ -30,14 +30,6 @@ ext_modules = [
         extra_link_args=extra_link_args
     )
 ]
-"""
-ext_modules = [
-    Extension('glfw3', ['glfw3.pyx'], libraries=['glfw3'],
-        extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args
-    )
-]
-"""
 ext_modules = cythonize(ext_modules)
 
 setup(
