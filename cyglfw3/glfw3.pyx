@@ -586,11 +586,18 @@ def defaultWindowHints():
 def windowHint(int target, int hint):
     cglfw3.glfwWindowHint(target, hint)
 
-def createWindow(int width, int height, char* title):
-    cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, NULL, NULL)
-    window = Window()
-    window._this_ptr = c_window
-    return window
+def createWindow(int width, int height, char* title, Monitor monitor=None, Window window=None):
+    cdef cglfw3.GLFWmonitor* glfwmonitor = NULL
+    cdef cglfw3.GLFWwindow* glfwwindow = NULL
+    if monitor:
+        glfwmonitor = <cglfw3.GLFWmonitor*>monitor._this_ptr
+    if window:
+        glfwwindow = <cglfw3.GLFWwindow*>window._this_ptr
+
+    cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, glfwmonitor, glfwwindow)
+    window_ = Window()
+    window_._this_ptr = c_window
+    return window_
 
 def destroyWindow(Window window):
     cglfw3.glfwDestroyWindow(<cglfw3.GLFWwindow*>window._this_ptr)
