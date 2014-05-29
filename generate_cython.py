@@ -609,7 +609,7 @@ def setWindowIconifyCallback(Window window, cbfun):
     _windowiconifyfuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetWindowIconifyCallback(<cglfw3.GLFWwindow*>window._this_ptr, windowiconifyfun_cb)
 
-def setFramebuferSizeCallback(Window window, cbfun):
+def setFramebufferSizeCallback(Window window, cbfun):
     global _framebuffersize
     _framebuffersizefuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetFramebufferSizeCallback(<cglfw3.GLFWwindow*>window._this_ptr, framebuffersizefun_cb)
