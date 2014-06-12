@@ -20,14 +20,12 @@ class WindowTestCase(unittest.TestCase):
 
     def test_create_window(self):
         window = glfw.CreateWindow(640, 480, 'Create')
-        time.sleep(0.5)
         glfw.DestroyWindow(window)
 
     def test_should_close(self):
         window = glfw.CreateWindow(640, 480, 'Should close')
         glfw.SetWindowShouldClose(window, True)
         self.assertTrue(glfw.WindowShouldClose(window))
-        time.sleep(0.5)
         glfw.DestroyWindow(window)
 
     def test_info_strings(self):
@@ -41,14 +39,11 @@ class WindowTestCase(unittest.TestCase):
             x,y = glfw.GetMonitorPos(monitor)
             width, height = glfw.GetMonitorPhysicalSize(monitor)
             window = glfw.CreateWindow(width, height, 'Monitors', monitor)
-            time.sleep(0.5)
             glfw.DestroyWindow(window)
-            time.sleep(0.5)
 
     def test_window_share(self):
         # test the window parameter of the createWindow function
         window = glfw.CreateWindow(640, 480, 'Share2', window=self.window)
-        time.sleep(0.5)
         glfw.DestroyWindow(window)
 
     @unittest.skip('No test')
@@ -108,12 +103,11 @@ class WindowTestCase(unittest.TestCase):
         self.assertTrue(called[0])
         self.assertTrue(called[1])
 
-    @unittest.skip('Causing segfauls, possible glfw issue on osx?')
     def test_show_hide(self):
         self.assertTrue(glfw.GetWindowAttrib(self.window, glfw.VISIBLE))
-        glfw.HideWindow(window)
+        glfw.HideWindow(self.window)
         self.assertFalse(glfw.GetWindowAttrib(self.window, glfw.VISIBLE))
-        glfw.ShowWindow(window)
+        glfw.ShowWindow(self.window)
         self.assertTrue(glfw.GetWindowAttrib(self.window, glfw.VISIBLE))
 
     @unittest.skip('No test')
@@ -135,7 +129,6 @@ class WindowTestCase(unittest.TestCase):
         # mouse button, pos, scroll
         pass
 
-    @unittest.skip('Causing segfauls, possible glfw issue on osx?')
     def test_mouse_buttons(self):
         glfw.GetMouseButton(window, 0)
 
