@@ -650,7 +650,7 @@ def SetInputMode(Window window, int mode, int value):
 def GetKey(Window window, int key):
     return cglfw3.glfwGetKey(<cglfw3.GLFWwindow*>window._this_ptr, key)
 
-def GetMouseButon(Window window, int button):
+def GetMouseButton(Window window, int button):
     return cglfw3.glfwGetMouseButton(<cglfw3.GLFWwindow*>window._this_ptr, button)
 
 def GetCursorPos(Window window):
