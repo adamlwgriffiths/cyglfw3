@@ -588,6 +588,9 @@ def RestoreWindow(Window window):
 def ShowWindow(Window window):
     cglfw3.glfwShowWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
+def HideWindow(Window window):
+    cglfw3.glfwHideWindow(<cglfw3.GLFWwindow*>window._this_ptr)
+
 def GetWindowAttrib(Window window, int attrib):
     return cglfw3.glfwGetWindowAttrib(<cglfw3.GLFWwindow*>window._this_ptr, attrib)
 
