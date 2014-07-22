@@ -127,6 +127,20 @@ The following commands are untested, please report their success or failure.
     python setup.py build_ext -i
 
 
+Common Problems
+===============
+
+PyOpenGL reports the OpenGL version as None and my GL functions do nothing!
+---------------------------------------------------------------------------
+
+You _must_ set an active context or your OpenGL calls will go no where::
+
+    glfw.MakeContextCurrent(window)
+
+
+This is by design in GLFW3.
+
+
 
 Dependencies
 ============
