@@ -570,6 +570,7 @@ def SetWindowPos(Window window, int xpos, int ypos):
 def GetWindowSize(Window window):
     cdef int width, height
     cglfw3.glfwGetWindowSize(<cglfw3.GLFWwindow*>window._this_ptr, &width, &height)
+    return width, height
 
 def SetWindowSize(Window window, int width, int height):
     cglfw3.glfwSetWindowSize(<cglfw3.GLFWwindow*>window._this_ptr, width, height)
