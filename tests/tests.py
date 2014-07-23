@@ -22,6 +22,10 @@ class WindowTestCase(unittest.TestCase):
         window = glfw.CreateWindow(640, 480, 'Create')
         glfw.DestroyWindow(window)
 
+    @unittest.skip('not implemented')
+    def test_window_size(self):
+        pass
+
     def test_should_close(self):
         window = glfw.CreateWindow(640, 480, 'Should close')
         glfw.SetWindowShouldClose(window, True)
@@ -31,6 +35,11 @@ class WindowTestCase(unittest.TestCase):
     def test_info_strings(self):
         self.assertIsInstance(glfw.GetVersion(), tuple)
         self.assertIsInstance(glfw.GetVersionString(), str)
+
+    @unittest.skip('not implemented')
+    def test_primary_monitor(self):
+        # test getting and using primary monitor
+        pass
 
     def test_get_monitors_test_fullscreen(self):
         monitors = glfw.GetMonitors()
@@ -130,7 +139,7 @@ class WindowTestCase(unittest.TestCase):
         pass
 
     def test_mouse_buttons(self):
-        glfw.GetMouseButton(window, 0)
+        glfw.GetMouseButton(self.window, 0)
 
     @unittest.skip('No test')
     def test_joystick(self):
