@@ -131,7 +131,7 @@ Common Problems
 ===============
 
 PyOpenGL reports the OpenGL version as None and my GL functions do nothing!
----------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You _must_ set an active context or your OpenGL calls will go no where::
 
