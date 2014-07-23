@@ -49,7 +49,7 @@ with open('README.rst') as f:
 
 setup(
     name="cyglfw3",
-    version='0.0.4',
+    version='0.0.5',
     description="Python bindings for GLFW 3+ using Cython",
     long_description=long_description,
     license = 'BSD',
