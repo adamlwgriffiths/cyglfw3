@@ -38,6 +38,19 @@ C Code
             return -1;
         }
 
+        glfwMakeContextCurrent(window);
+        while (!glfwWindowShowClose(window))
+        {
+            /* Render here */
+
+            /* Display the render buffer */
+            glfwSwapBuffers(window);
+
+            /* Pump the message queue */
+            glfwPollEvents();
+        }
+
+        /* Shutdown */
         glfwTerminate();
         return 0;
     }
