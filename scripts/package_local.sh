@@ -16,7 +16,7 @@ python setup.py sdist
 
 # get the latest version
 # this script will fail if the version numbers aren't sortable
-LATEST=`ls dist/cyglfw3-*.tar.gz | sort -n | head`
+LATEST=`ls dist/cyglfw3-*.tar.gz | sort -nr | head`
 pip install --upgrade --force-reinstall $LATEST
 
 popd
