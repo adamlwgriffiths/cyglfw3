@@ -34,8 +34,9 @@ if 'darwin' in platform:
     if os.path.exists('/usr/local/lib/libglfw3.dylib'):
         glfw_lib = 'glfw3'
 
+
 ext_modules = [
-    Extension('cyglfw3.glfw3', ['cyglfw3/glfw3.pyx'], libraries=['glfw3'],
+    Extension('cyglfw3.glfw3', ['cyglfw3/glfw3.pyx'], libraries=[glfw_lib],
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args
     )
