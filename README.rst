@@ -89,6 +89,43 @@ Python Code
     glfw.Terminate()
 
 
+Prefix Compatible Code
+======================
+
+A compatibility layer is provided to be 1:1 compatible with other GLFW3 wrappers.
+Commonly, these don't drop the `GLFW_` prefix from constants, nor the `glfw` prefix
+from functions.
+
+To use the compatibility module, use `import cyglfw3.prefix as glfw`::
+
+    # needed if you're running the OS-X system python
+    try:
+        from AppKit import NSApp, NSApplication
+    except:
+        pass
+
+    import cyglfw3.compatible as glfw
+    if not glfw.glfwInit():
+        exit()
+
+    window = glfw.glfwCreateWindow(640, 480, 'Hello World')
+    if not window:
+        glfw.glfwTerminate()
+        exit()
+
+    glfw.glfwMakeContextCurrent(window)
+    while not glfw.glfwWindowShouldClose(window):
+        # Render here
+
+        # Swap front and back buffers
+        glfw.glfwSwapBuffers(window)
+
+        # Poll for and process events
+        glfw.glfwPollEvents()
+
+    glfw.glfwTerminate()
+
+
 Installation
 ============
 
@@ -151,7 +188,6 @@ You _must_ set an active context or your OpenGL calls will go no where::
 
 
 This is by design in GLFW3.
-
 
 
 Dependencies

@@ -1,10 +1,2 @@
-Add a glfw compatibilty layer for other wrapper syntax
-
-ie
-
-import cyglfw3 as glfw
-glfw.Init()
-
-import cyglfw3.compat as glfw
-glfw.glfwInit()
-
+Update to latest GLFW
+Provide fallbacks for older GLFW3 versions (needed?)

@@ -1,0 +1,42 @@
+3.0.0.5
+-------
+
+* Change version numbering to match the GLFW3 release, version is `<GLFW3 VERSION>.version`
+* Add `compatible` module for compatibility with other libraries.
+* Fix build scripts
+* Fix version in __init__ being 0.0.2
+
+0.0.5
+-----
+
+* Make C example match Python
+* Add more examples
+* Add placeholder tests
+* Fix GetWindowSize returning None
+* Update README format
+* Add basic examples
+
+0.0.4
+-----
+
+* Fix typo in GetMouseButton (was GetMouseButon)
+* Add missing function HideWindow
+* Remove sleeps in test
+
+0.0.3
+-----
+
+* Add tests
+* Add build script
+* Add .gitignore
+* Remove commented out code
+* Fix typo in SetFramebufferSizeCallback
+* Fix CreateWindow not having Monitor/Window params
+
+0.0.2
+-----
+
+* Add version to cyglfw3/__init__.py
+* Fix SetCursorPos being called GetCursorPos
+* Fix typo in setup.py
+
