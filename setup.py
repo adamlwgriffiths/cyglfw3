@@ -3,6 +3,8 @@ import sys
 from setuptools import setup, Extension
 from setuptools.dist import Distribution
 
+execfile('cyglfw3/version.py')
+
 # auto-install cython
 Distribution(dict(setup_requires='Cython'))
 
@@ -49,7 +51,7 @@ with open('README.rst') as f:
 
 setup(
     name="cyglfw3",
-    version='0.0.5',
+    version=__version__,
     description="Python bindings for GLFW 3+ using Cython",
     long_description=long_description,
     license = 'BSD',
