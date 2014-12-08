@@ -96,7 +96,7 @@ A compatibility layer is provided to be 1:1 compatible with other GLFW3 wrappers
 Commonly, these don't drop the `GLFW_` prefix from constants, nor the `glfw` prefix
 from functions.
 
-To use the compatibility module, use `import cyglfw3.prefix as glfw`::
+To use the compatibility module, use `import cyglfw3.compatible as glfw`::
 
     # needed if you're running the OS-X system python
     try:
