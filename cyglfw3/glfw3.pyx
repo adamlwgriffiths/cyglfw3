@@ -185,6 +185,8 @@ ICONIFIED = cglfw3.GLFW_ICONIFIED
 RESIZABLE = cglfw3.GLFW_RESIZABLE
 VISIBLE = cglfw3.GLFW_VISIBLE
 DECORATED = cglfw3.GLFW_DECORATED
+AUTO_ICONIFY = cglfw3.GLFW_AUTO_ICONIFY
+FLOATING = cglfw3.GLFW_FLOATING
 RED_BITS = cglfw3.GLFW_RED_BITS
 GREEN_BITS = cglfw3.GLFW_GREEN_BITS
 BLUE_BITS = cglfw3.GLFW_BLUE_BITS
@@ -200,6 +202,7 @@ STEREO = cglfw3.GLFW_STEREO
 SAMPLES = cglfw3.GLFW_SAMPLES
 SRGB_CAPABLE = cglfw3.GLFW_SRGB_CAPABLE
 REFRESH_RATE = cglfw3.GLFW_REFRESH_RATE
+DOUBLEBUFFER = cglfw3.GLFW_DOUBLEBUFFER
 CLIENT_API = cglfw3.GLFW_CLIENT_API
 CONTEXT_VERSION_MAJOR = cglfw3.GLFW_CONTEXT_VERSION_MAJOR
 CONTEXT_VERSION_MINOR = cglfw3.GLFW_CONTEXT_VERSION_MINOR
@@ -208,6 +211,7 @@ CONTEXT_ROBUSTNESS = cglfw3.GLFW_CONTEXT_ROBUSTNESS
 OPENGL_FORWARD_COMPAT = cglfw3.GLFW_OPENGL_FORWARD_COMPAT
 OPENGL_DEBUG_CONTEXT = cglfw3.GLFW_OPENGL_DEBUG_CONTEXT
 OPENGL_PROFILE = cglfw3.GLFW_OPENGL_PROFILE
+CONTEXT_RELEASE_BEHAVIOR = cglfw3.GLFW_CONTEXT_RELEASE_BEHAVIOR
 OPENGL_API = cglfw3.GLFW_OPENGL_API
 OPENGL_ES_API = cglfw3.GLFW_OPENGL_ES_API
 NO_ROBUSTNESS = cglfw3.GLFW_NO_ROBUSTNESS
@@ -222,8 +226,18 @@ STICKY_MOUSE_BUTTONS = cglfw3.GLFW_STICKY_MOUSE_BUTTONS
 CURSOR_NORMAL = cglfw3.GLFW_CURSOR_NORMAL
 CURSOR_HIDDEN = cglfw3.GLFW_CURSOR_HIDDEN
 CURSOR_DISABLED = cglfw3.GLFW_CURSOR_DISABLED
+ANY_RELEASE_BEHAVIOR = cglfw3.GLFW_ANY_RELEASE_BEHAVIOR
+RELEASE_BEHAVIOR_FLUSH = cglfw3.GLFW_RELEASE_BEHAVIOR_FLUSH
+RELEASE_BEHAVIOR_NONE = cglfw3.GLFW_RELEASE_BEHAVIOR_NONE
+ARROW_CURSOR = cglfw3.GLFW_ARROW_CURSOR
+IBEAM_CURSOR = cglfw3.GLFW_IBEAM_CURSOR
+CROSSHAIR_CURSOR = cglfw3.GLFW_CROSSHAIR_CURSOR
+HAND_CURSOR = cglfw3.GLFW_HAND_CURSOR
+HRESIZE_CURSOR = cglfw3.GLFW_HRESIZE_CURSOR
+VRESIZE_CURSOR = cglfw3.GLFW_VRESIZE_CURSOR
 CONNECTED = cglfw3.GLFW_CONNECTED
 DISCONNECTED = cglfw3.GLFW_DISCONNECTED
+DONT_CARE = cglfw3.GLFW_DONT_CARE
     
 
 #
@@ -367,6 +381,9 @@ cdef class Window:
         elif op == 5:
             # >=
             return self._this_ptr >= other._this_ptr
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 cdef class Monitor:
     cdef const cglfw3.GLFWmonitor * _this_ptr
@@ -392,7 +409,9 @@ cdef class Monitor:
         elif op == 5:
             # >=
             return self._this_ptr >= other._this_ptr
-
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 cdef class VidMode:
     cdef const cglfw3.GLFWvidmode * _this_ptr
@@ -444,6 +463,9 @@ cdef class VidMode:
         elif op == 5:
             # >=
             return us >= them
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 cdef class GammaRamp:
     cdef const cglfw3.GLFWgammaramp * _this_ptr
@@ -495,6 +517,9 @@ cdef class GammaRamp:
         elif op == 5:
             # >=
             return us >= them
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 #
 # Functions
@@ -652,6 +677,11 @@ def GetWindowAttrib(Window window, int attrib):
 #
 #def GetWindowUserPointer(Window window):
 #    pass
+
+def SetCursorPosCallback(Window window, cbfun):
+    global _cursorposfuns
+    _cursorposfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCursorPosCallback(<cglfw3.GLFWwindow*>window._this_ptr, cursorposfun_cb)
 
 def SetWindowPosCallback(Window window, cbfun):
     global _windowposfuns

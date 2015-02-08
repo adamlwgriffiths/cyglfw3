@@ -185,6 +185,8 @@ cdef extern from "GLFW/glfw3.h":
     cdef int GLFW_RESIZABLE
     cdef int GLFW_VISIBLE
     cdef int GLFW_DECORATED
+    cdef int GLFW_AUTO_ICONIFY
+    cdef int GLFW_FLOATING
     cdef int GLFW_RED_BITS
     cdef int GLFW_GREEN_BITS
     cdef int GLFW_BLUE_BITS
@@ -200,6 +202,7 @@ cdef extern from "GLFW/glfw3.h":
     cdef int GLFW_SAMPLES
     cdef int GLFW_SRGB_CAPABLE
     cdef int GLFW_REFRESH_RATE
+    cdef int GLFW_DOUBLEBUFFER
     cdef int GLFW_CLIENT_API
     cdef int GLFW_CONTEXT_VERSION_MAJOR
     cdef int GLFW_CONTEXT_VERSION_MINOR
@@ -208,6 +211,7 @@ cdef extern from "GLFW/glfw3.h":
     cdef int GLFW_OPENGL_FORWARD_COMPAT
     cdef int GLFW_OPENGL_DEBUG_CONTEXT
     cdef int GLFW_OPENGL_PROFILE
+    cdef int GLFW_CONTEXT_RELEASE_BEHAVIOR
     cdef int GLFW_OPENGL_API
     cdef int GLFW_OPENGL_ES_API
     cdef int GLFW_NO_ROBUSTNESS
@@ -222,8 +226,18 @@ cdef extern from "GLFW/glfw3.h":
     cdef int GLFW_CURSOR_NORMAL
     cdef int GLFW_CURSOR_HIDDEN
     cdef int GLFW_CURSOR_DISABLED
+    cdef int GLFW_ANY_RELEASE_BEHAVIOR
+    cdef int GLFW_RELEASE_BEHAVIOR_FLUSH
+    cdef int GLFW_RELEASE_BEHAVIOR_NONE
+    cdef int GLFW_ARROW_CURSOR
+    cdef int GLFW_IBEAM_CURSOR
+    cdef int GLFW_CROSSHAIR_CURSOR
+    cdef int GLFW_HAND_CURSOR
+    cdef int GLFW_HRESIZE_CURSOR
+    cdef int GLFW_VRESIZE_CURSOR
     cdef int GLFW_CONNECTED
     cdef int GLFW_DISCONNECTED
+    cdef int GLFW_DONT_CARE
     
     #
     # Structs
@@ -232,6 +246,9 @@ cdef extern from "GLFW/glfw3.h":
         pass
         
     cdef struct GLFWwindow:
+        pass
+        
+    cdef struct GLFWcursor:
         pass
         
     cdef struct GLFWvidmode:
@@ -247,6 +264,11 @@ cdef extern from "GLFW/glfw3.h":
         unsigned short* green
         unsigned short* blue
         unsigned int size
+        
+    cdef struct GLFWimage:
+        int width
+        int height
+        unsigned char* pixels
         
     
     #
@@ -267,6 +289,8 @@ cdef extern from "GLFW/glfw3.h":
     ctypedef void (* GLFWscrollfun)(GLFWwindow*,double,double)
     ctypedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int)
     ctypedef void (* GLFWcharfun)(GLFWwindow*,unsigned int)
+    ctypedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int)
+    ctypedef void (* GLFWdropfun)(GLFWwindow*,int,const char**)
     ctypedef void (* GLFWmonitorfun)(GLFWmonitor*,int)
     
     #
@@ -280,7 +304,7 @@ cdef extern from "GLFW/glfw3.h":
     GLFWmonitor** glfwGetMonitors(int* count)
     GLFWmonitor* glfwGetPrimaryMonitor()
     void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos)
-    void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* width, int* height)
+    void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int* heightMM)
     const char* glfwGetMonitorName(GLFWmonitor* monitor)
     GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
     const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count)
@@ -300,6 +324,7 @@ cdef extern from "GLFW/glfw3.h":
     void glfwGetWindowSize(GLFWwindow* window, int* width, int* height)
     void glfwSetWindowSize(GLFWwindow* window, int width, int height)
     void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height)
+    void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom)
     void glfwIconifyWindow(GLFWwindow* window)
     void glfwRestoreWindow(GLFWwindow* window)
     void glfwShowWindow(GLFWwindow* window)
@@ -317,18 +342,25 @@ cdef extern from "GLFW/glfw3.h":
     GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun)
     void glfwPollEvents()
     void glfwWaitEvents()
+    void glfwPostEmptyEvent()
     int glfwGetInputMode(GLFWwindow* window, int mode)
     void glfwSetInputMode(GLFWwindow* window, int mode, int value)
     int glfwGetKey(GLFWwindow* window, int key)
     int glfwGetMouseButton(GLFWwindow* window, int button)
     void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos)
     void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos)
+    GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
+    GLFWcursor* glfwCreateStandardCursor(int shape)
+    void glfwDestroyCursor(GLFWcursor* cursor)
+    void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor)
     GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun)
     GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun)
+    GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmodsfun cbfun)
     GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun)
     GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun)
     GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun)
     GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun)
+    GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun)
     int glfwJoystickPresent(int joy)
     const float* glfwGetJoystickAxes(int joy, int* count)
     const unsigned char* glfwGetJoystickButtons(int joy, int* count)
