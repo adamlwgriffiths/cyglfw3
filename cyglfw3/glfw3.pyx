@@ -344,6 +344,21 @@ cdef void charfun_cb(cglfw3.GLFWwindow* a,unsigned int b):
     window._this_ptr = a
     cb(window, b)
 
+cdef dict _charmodsfuns = {}
+cdef void charmodsfun_cb(cglfw3.GLFWwindow* a,unsigned int b,int c):
+    cb = _charmodsfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    cb(window, b, c)
+
+cdef dict _dropfuns = {}
+cdef void dropfun_cb(cglfw3.GLFWwindow* a,int b,const char** c):
+    cb = _dropfuns[<size_t>a]
+    window = Window()
+    window._this_ptr = a
+    d = [<bytes>c[i] for i in range(b)]
+    cb(window, d)
+
 cdef object _monitorfun
 cdef void monitorfun_cb(cglfw3.GLFWmonitor* a,int b):
     global _monitorfun
@@ -351,10 +366,38 @@ cdef void monitorfun_cb(cglfw3.GLFWmonitor* a,int b):
     monitor._this_ptr = a
     _monitorfun(monitor, b)
 
-
 #
 # Classes
 #
+
+cdef class Monitor:
+    cdef const cglfw3.GLFWmonitor * _this_ptr
+    
+    def __cinit__(self):
+        self._this_ptr = NULL
+
+    def __richcmp__(Monitor self, Monitor other, int op):
+        if op == 0:
+            # <
+            return self._this_ptr < other._this_ptr
+        elif op == 1:
+            # <=
+            return self._this_ptr <= other._this_ptr
+        elif op == 2:
+            # ==
+            return self._this_ptr == other._this_ptr
+        elif op == 3:
+            # !=
+            return self._this_ptr != other._this_ptr
+        elif op == 4:
+            # >
+            return self._this_ptr > other._this_ptr
+        elif op == 5:
+            # >=
+            return self._this_ptr >= other._this_ptr
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 cdef class Window:
     cdef const cglfw3.GLFWwindow * _this_ptr
@@ -385,12 +428,13 @@ cdef class Window:
     def __hash__(self):
         return <size_t>self._this_ptr
 
-cdef class Monitor:
-    cdef const cglfw3.GLFWmonitor * _this_ptr
+cdef class Cursor:
+    cdef const cglfw3.GLFWcursor * _this_ptr
+    
     def __cinit__(self):
         self._this_ptr = NULL
 
-    def __richcmp__(Monitor self, Monitor other, int op):
+    def __richcmp__(Cursor self, Cursor other, int op):
         if op == 0:
             # <
             return self._this_ptr < other._this_ptr
@@ -517,6 +561,43 @@ cdef class GammaRamp:
         elif op == 5:
             # >=
             return us >= them
+    
+    def __hash__(self):
+        return <size_t>self._this_ptr
+
+cdef class Image:
+    cdef const cglfw3.GLFWimage * _this_ptr
+    
+    def __cinit__(self):
+        self._this_ptr = NULL
+    
+    property width:
+        def __get__(self):
+            return self._this_ptr.width
+
+    property height:
+        def __get__(self):
+            return self._this_ptr.height
+    
+    def __richcmp__(Image self, Image other, int op):
+        if op == 0:
+            # <
+            return self._this_ptr < other._this_ptr
+        elif op == 1:
+            # <=
+            return self._this_ptr <= other._this_ptr
+        elif op == 2:
+            # ==
+            return self._this_ptr == other._this_ptr
+        elif op == 3:
+            # !=
+            return self._this_ptr != other._this_ptr
+        elif op == 4:
+            # >
+            return self._this_ptr > other._this_ptr
+        elif op == 5:
+            # >=
+            return self._this_ptr >= other._this_ptr
     
     def __hash__(self):
         return <size_t>self._this_ptr
@@ -657,6 +738,11 @@ def GetFramebufferSize(Window window):
     cglfw3.glfwGetFramebufferSize(<cglfw3.GLFWwindow*>window._this_ptr, &width, &height)
     return width, height
 
+def GetWindowFrameSize(Window window):
+    cdef int left, top, right, bottom
+    cglfw3.glfwGetWindowFrameSize(<cglfw3.GLFWwindow*>window._this_ptr, &left, &top, &right, &bottom)
+    return left, top, right, bottom
+
 def IconifyWindow(Window window):
     cglfw3.glfwIconifyWindow(<cglfw3.GLFWwindow*>window._this_ptr)
 
@@ -677,11 +763,6 @@ def GetWindowAttrib(Window window, int attrib):
 #
 #def GetWindowUserPointer(Window window):
 #    pass
-
-def SetCursorPosCallback(Window window, cbfun):
-    global _cursorposfuns
-    _cursorposfuns[<size_t>window._this_ptr] = cbfun
-    cglfw3.glfwSetCursorPosCallback(<cglfw3.GLFWwindow*>window._this_ptr, cursorposfun_cb)
 
 def SetWindowPosCallback(Window window, cbfun):
     global _windowposfuns
@@ -724,6 +805,9 @@ def PollEvents():
 def WaitEvents():
     cglfw3.glfwWaitEvents()
 
+def PostEmptyEvent():
+    cglfw3.glfwPostEmptyEvent()
+
 def GetInputMode(Window window, int mode):
     return cglfw3.glfwGetInputMode(<cglfw3.GLFWwindow*>window._this_ptr, mode)
 
@@ -744,6 +828,26 @@ def GetCursorPos(Window window):
 def SetCursorPos(Window window, double xpos, double ypos):
     cglfw3.glfwSetCursorPos(<cglfw3.GLFWwindow*>window._this_ptr, xpos, ypos)
 
+def CreateCursor(Image image, int xhot, int yhot):
+    cdef const cglfw3.GLFWcursor* c_cursor = cglfw3.glfwCreateCursor(<cglfw3.GLFWimage*>image._this_ptr, xhot, yhot)
+    
+    cursor = Cursor()
+    cursor._this_ptr = c_cursor
+    return cursor
+
+def CreateStandardCursor(int shape):
+    cdef const cglfw3.GLFWcursor* c_cursor = cglfw3.glfwCreateStandardCursor(shape)
+    
+    cursor = Cursor()
+    cursor._this_ptr = c_cursor
+    return cursor
+
+def DestroyCursor(Cursor cursor):
+    cglfw3.glfwDestroyCursor(<cglfw3.GLFWcursor*>cursor._this_ptr)
+
+def SetCursor(Window window, Cursor cursor):
+    cglfw3.glfwSetCursor(<cglfw3.GLFWwindow*>window._this_ptr, <cglfw3.GLFWcursor*>cursor._this_ptr)
+
 def SetKeyCallback(Window window, cbfun):
     global _keyfuns
     _keyfuns[<size_t>window._this_ptr] = cbfun
@@ -754,10 +858,20 @@ def SetCharCallback(Window window, cbfun):
     _charfuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetCharCallback(<cglfw3.GLFWwindow*>window._this_ptr, charfun_cb)
 
+def SetCharModsCallback(Window window, cbfun):
+    global _charmodsfuns
+    _charmodsfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCharModsCallback(<cglfw3.GLFWwindow*>window._this_ptr, charmodsfun_cb)
+
 def SetMouseButtonCallback(Window window, cbfun):
     global _mousebuttonfuns
     _mousebuttonfuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetMouseButtonCallback(<cglfw3.GLFWwindow*>window._this_ptr, mousebuttonfun_cb)
+
+def SetCursorPosCallback(Window window, cbfun):
+    global _cursorposfuns
+    _cursorposfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCursorPosCallback(<cglfw3.GLFWwindow*>window._this_ptr, cursorposfun_cb)
 
 def SetCursorEnterCallback(Window window, cbfun):
     global _cursorenterfuns
@@ -768,6 +882,11 @@ def SetScrollCallback(Window window, cbfun):
     global _scrollfuns
     _scrollfuns[<size_t>window._this_ptr] = cbfun
     cglfw3.glfwSetScrollCallback(<cglfw3.GLFWwindow*>window._this_ptr, scrollfun_cb)
+
+def SetDropCallback(Window window, cbfun):
+    global _dropfuns
+    _dropfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetDropCallback(<cglfw3.GLFWwindow*>window._this_ptr, dropfun_cb)
 
 def JoystickPresent(int joy):
     return cglfw3.glfwJoystickPresent(joy)
