@@ -13,7 +13,7 @@ the GLFW coding style remaining consistent.
 Changes to the GLFW coding style may break this code.
 """
 
-import os.path
+import os
 import re
 
 cyglfw3_directory = os.path.join(os.path.dirname(__file__), '..', 'cyglfw3')
@@ -93,6 +93,8 @@ header_paths = [
     '/opt/local/include/GLFW/glfw3.h',
     # linux
     '/usr/include/GLFW/glfw3.h',
+    # windows
+    os.path.join(os.environ.get('GLFW_ROOT', ''), 'include/GLFW/glfw3.h'),
 ]
 
 header = None
@@ -316,6 +318,9 @@ cdef class Window:
             # >=
             return self._this_ptr >= other._this_ptr
 
+    def __hash__(self):
+        return <size_t>self._this_ptr
+
 cdef class Monitor:
     cdef const cglfw3.GLFWmonitor * _this_ptr
     def __cinit__(self):
@@ -341,6 +346,8 @@ cdef class Monitor:
             # >=
             return self._this_ptr >= other._this_ptr
 
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 cdef class VidMode:
     cdef const cglfw3.GLFWvidmode * _this_ptr
@@ -393,6 +400,9 @@ cdef class VidMode:
             # >=
             return us >= them
 
+    def __hash__(self):
+        return <size_t>self._this_ptr
+
 cdef class GammaRamp:
     cdef const cglfw3.GLFWgammaramp * _this_ptr
     def __cinit__(self):
@@ -443,6 +453,9 @@ cdef class GammaRamp:
         elif op == 5:
             # >=
             return us >= them
+
+    def __hash__(self):
+        return <size_t>self._this_ptr
 
 #
 # Functions
@@ -600,6 +613,11 @@ def GetWindowAttrib(Window window, int attrib):
 #
 #def GetWindowUserPointer(Window window):
 #    pass
+
+def SetCursorPosCallback(Window window, cbfun):
+    global _cursorposfuns
+    _cursorposfuns[<size_t>window._this_ptr] = cbfun
+    cglfw3.glfwSetCursorPosCallback(<cglfw3.GLFWwindow*>window._this_ptr, cursorposfun_cb)
 
 def SetWindowPosCallback(Window window, cbfun):
     global _windowposfuns

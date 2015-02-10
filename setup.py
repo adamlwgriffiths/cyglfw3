@@ -1,4 +1,4 @@
-import os.path
+import os
 import sys
 from setuptools import setup, Extension
 from setuptools.dist import Distribution
@@ -36,6 +36,10 @@ if 'darwin' in platform:
     if os.path.exists('/usr/local/lib/libglfw3.dylib'):
         glfw_lib = 'glfw3'
 
+if 'win32' in platform:
+    glfw_lib = 'glfw3dll'
+    extra_compile_args.append('-I%s' % (os.path.join(os.environ['GLFW_ROOT'], 'include'),))
+    extra_link_args.append('/LIBPATH:%s' % (os.path.join(os.environ['GLFW_ROOT'], 'lib-vc2012'),))
 
 ext_modules = [
     Extension('cyglfw3.glfw3', ['cyglfw3/glfw3.pyx'], libraries=[glfw_lib],
