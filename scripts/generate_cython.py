@@ -93,9 +93,11 @@ header_paths = [
     '/opt/local/include/GLFW/glfw3.h',
     # linux
     '/usr/include/GLFW/glfw3.h',
-    # windows
-    os.path.join(os.environ['GLFW_ROOT'], 'include/GLFW/glfw3.h')
 ]
+
+# windows
+if 'GLFW_ROOT' in os.environ:
+    header_paths.append(os.path.join(os.environ['GLFW_ROOT'], 'include/GLFW/glfw3.h'))
 
 header = None
 for path in header_paths:
