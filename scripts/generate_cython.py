@@ -182,6 +182,9 @@ pyx_supplemental = """
 # Supplemental
 #
 
+from libc.stdlib cimport malloc, free
+from cython cimport view
+
 #
 # Callbacks
 #
@@ -503,12 +506,30 @@ cdef class GammaRamp:
     def __hash__(self):
         return <size_t>self._this_ptr
 
+cdef getitem(obj, key, default=None):
+    try:
+        return obj[key]
+    except (TypeError, KeyError, IndexError):
+        return default
+
+cdef getlen(obj, default=None):
+    try:
+        return len(obj)
+    except TypeError:
+        return default
+
+cdef getshape(obj):
+    lengths = []
+    while True:
+        length, obj = getlen(obj), getitem(obj, 0)
+        if length is None: break
+        lengths.append(length)
+    return tuple(lengths)
+
 cdef class Image:
-    cdef const cglfw3.GLFWimage * _this_ptr
-    
-    def __cinit__(self):
-        self._this_ptr = NULL
-    
+    cdef cglfw3.GLFWimage * _this_ptr
+    cdef unsigned char[:,:,::1] _data
+
     property width:
         def __get__(self):
             return self._this_ptr.width
@@ -516,7 +537,49 @@ cdef class Image:
     property height:
         def __get__(self):
             return self._this_ptr.height
-    
+
+    property size:
+        def __get__(self):
+            return (self.width, self.height)
+
+    property pixels:
+        def __get__(self):
+            return self._data
+
+        def __set__(self, value):
+            cdef unsigned char[:,:,::1] data
+            if isinstance(value, (tuple, list)):
+                shape = getshape(value)
+                data = view.array(shape=(shape[0], shape[1], 4), itemsize=sizeof(unsigned char), format="c")
+                for i in range(shape[0]):
+                    for j in range(shape[1]):
+                        data[i,j,0] = getitem(value[i][j], 0, 0x00)
+                        data[i,j,1] = getitem(value[i][j], 1, 0x00)
+                        data[i,j,2] = getitem(value[i][j], 2, 0x00)
+                        data[i,j,3] = getitem(value[i][j], 3, 0xFF)
+            else:
+                # must be a (writable) memory view or a buffer type
+                data = value
+
+            self._this_ptr.width = data.shape[0]
+            self._this_ptr.height = data.shape[1]
+            self._this_ptr.pixels = &data[0][0][0]
+
+            self._data = data
+
+    def __cinit__(self):
+        self._this_ptr = NULL
+
+    def __init__(self, pixels=None):
+        self._this_ptr = <cglfw3.GLFWimage *>malloc(sizeof(cglfw3.GLFWimage))
+        
+        if pixels is not None:
+            self.pixels = pixels
+        
+    def __dealloc__(self):
+        free(self._this_ptr)
+        self._this_ptr = NULL
+
     def __richcmp__(Image self, Image other, int op):
         if op == 0:
             # <
@@ -536,6 +599,9 @@ cdef class Image:
         elif op == 5:
             # >=
             return self._this_ptr >= other._this_ptr
+    
+    def __nonzero__(self):
+        return self._this_ptr != NULL
     
     def __hash__(self):
         return <size_t>self._this_ptr

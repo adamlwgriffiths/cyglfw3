@@ -1,5 +1,6 @@
 # cython files
 *.so
+*.dll
 build/
 cyglfw3/*.c
 
