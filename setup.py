@@ -62,7 +62,6 @@ setup(
     long_description=long_description,
     license = 'BSD',
     author="Adam Griffiths",
-    author_email="adam.lw.griffiths@gmail.com",
     install_requires=['Cython'],
     url='http://github.com/adamlwgriffiths/cyglfw3',
     packages=['cyglfw3'],
