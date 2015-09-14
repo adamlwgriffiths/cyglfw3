@@ -3,7 +3,8 @@ import sys
 from setuptools import setup, Extension
 from setuptools.dist import Distribution
 
-execfile('cyglfw3/version.py')
+with open("./cyglfw3/version.py") as versionfile:
+    exec(versionfile.read())
 
 # auto-install cython
 Distribution(dict(setup_requires='Cython'))
