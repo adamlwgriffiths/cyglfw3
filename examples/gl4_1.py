@@ -1,3 +1,4 @@
+﻿from __future__ import print_function
 from OpenGL import GL
 import cyglfw3 as glfw
 
@@ -14,11 +15,11 @@ glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
 window = glfw.CreateWindow(640, 480, 'Hello World')
 if not window:
     glfw.Terminate()
-    print 'Failed to create window'
+    print('Failed to create window')
     exit()
 
 glfw.MakeContextCurrent(window)
-print GL.glGetString(GL.GL_VERSION)
+print(GL.glGetString(GL.GL_VERSION))
 
 glfw.DestroyWindow(window)
 glfw.Terminate()
