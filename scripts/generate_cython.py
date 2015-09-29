@@ -704,8 +704,8 @@ def CreateWindow(int width, int height, title, Monitor monitor=None, Window wind
     if window:
         glfwwindow = <cglfw3.GLFWwindow*>window._this_ptr
 		
-	if type(title) is unicode:
-		title = (<unicode>title).encode("utf-8")
+    if type(title) is unicode:
+	    title = (<unicode>title).encode("utf-8")
 
     cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, glfwmonitor, glfwwindow)
     window_ = Window()
