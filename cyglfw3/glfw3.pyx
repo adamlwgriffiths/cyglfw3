@@ -758,13 +758,16 @@ def DefaultWindowHints():
 def WindowHint(int target, int hint):
     cglfw3.glfwWindowHint(target, hint)
 
-def CreateWindow(int width, int height, char* title, Monitor monitor=None, Window window=None):
+def CreateWindow(int width, int height, title, Monitor monitor=None, Window window=None):
     cdef cglfw3.GLFWmonitor* glfwmonitor = NULL
     cdef cglfw3.GLFWwindow* glfwwindow = NULL
     if monitor:
         glfwmonitor = <cglfw3.GLFWmonitor*>monitor._this_ptr
     if window:
         glfwwindow = <cglfw3.GLFWwindow*>window._this_ptr
+        
+    if type(title) is unicode:
+        title = (<unicode>title).encode("utf-8")
 
     cdef const cglfw3.GLFWwindow* c_window = cglfw3.glfwCreateWindow(width, height, title, glfwmonitor, glfwwindow)
     window_ = Window()
@@ -780,7 +783,9 @@ def WindowShouldClose(Window window):
 def SetWindowShouldClose(Window window, int value):
     cglfw3.glfwSetWindowShouldClose(<cglfw3.GLFWwindow*>window._this_ptr, value)
 
-def SetWindowTitle(Window window, const char* title):
+def SetWindowTitle(Window window, title):
+    if type(title) is unicode:
+        title = (<unicode>title).encode("utf-8")
     cglfw3.glfwSetWindowTitle(<cglfw3.GLFWwindow*>window._this_ptr, title)
 
 def GetWindowPos(Window window):
@@ -978,7 +983,9 @@ def GetJoystickButtons(int joy):
 def GetJoystickName(int joy):
     return str(cglfw3.glfwGetJoystickName(joy))
 
-def SetClipboardString(Window window, const char* string):
+def SetClipboardString(Window window, string):
+    if type(string) is unicode:
+        string = (<unicode>string).encode("utf-8")
     cglfw3.glfwSetClipboardString(<cglfw3.GLFWwindow*>window._this_ptr, string)
 
 def GetClipboardString(Window window):
