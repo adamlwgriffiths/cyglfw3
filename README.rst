@@ -195,7 +195,7 @@ This is by design in GLFW3.
 Dependencies
 ============
 
-* Python 2.7
+* Python 2.7 / 3.4
 * Cython
 * GLFW 3
 
