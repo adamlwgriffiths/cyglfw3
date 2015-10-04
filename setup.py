@@ -72,7 +72,6 @@ setup(
     ext_modules=ext_modules,
     platforms=['any'],
     classifiers=(
-        'Development Status :: 4 - Beta',
         'Natural Language :: English',
         'Intended Audience :: Developers',
         'Operating System :: MacOS :: MacOS X',
