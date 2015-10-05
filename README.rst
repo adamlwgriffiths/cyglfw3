@@ -175,7 +175,7 @@ The following commands are untested, please report their success or failure.
     set GLFW_ROOT=<path to include/GLFW/glfw3.h>
     python setup.py build_ext -i
 
-If you get `ImportError: DLL load failed: The specified procedure could not be found.`
+If you get ``ImportError: DLL load failed: The specified procedure could not be found.``
 Please place the glfw3.dll from `lib-vc2012` in the installation path.
 
 
