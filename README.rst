@@ -139,9 +139,9 @@ Manual Building
 
 If you have trouble building CyGLFW3, please raise an issue on Github.
 
-When specifying the include path, ensure that the GLFW directory is a sub-directory
+When specifying the include path, ensure that the ``GLFW`` directory is a sub-directory
 of that path.
-For example: the path /usr/local/include/GLFW would use include /usr/local/include
+For example: the path ``/usr/local/include/GLFW`` would use include ``/usr/local/include``
 
 The lib path should contain the glfw library file.
 
