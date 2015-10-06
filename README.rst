@@ -168,8 +168,6 @@ Specifying an alternate GLFW installation path:
 Windows
 -------
 
-The following commands are untested, please report their success or failure.
-
 ::
 
     set GLFW_ROOT=<path to include/GLFW/glfw3.h>
