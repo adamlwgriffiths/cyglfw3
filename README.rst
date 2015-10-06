@@ -177,15 +177,11 @@ If you get ``ImportError: DLL load failed: The specified procedure could not be 
 Please place the glfw3.dll from `lib-vc2012` in the installation path.
 
 
-Common Problems
-===============
+Notes
+=====
 
-- PyOpenGL reports the OpenGL version as None and my GL functions do nothing!
-
-You _must_ set an active context or your OpenGL calls will go no where::
-
-    glfw.MakeContextCurrent(window)
-
+You _must_ first set an active context by using the ``glfw.MakeContextCurrent(window)`` call
+before making _any_ calls to OpenGL, or your OpenGL calls will go no where.
 
 This is by design in GLFW3.
 
