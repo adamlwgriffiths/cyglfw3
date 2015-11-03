@@ -10,6 +10,12 @@ if not window:
     glfwTerminate()
     exit(1)
 
+def key_callback(window, key, scancode, action, mods):
+    if (key == GLFW_KEY_ESCAPE and action == GLFW_PRESS):
+        glfwSetWindowShouldClose(window, gl.GL_TRUE)
+
+glfwSetKeyCallback(window, key_callback)
+
 glfwMakeContextCurrent(window)
 while not glfwWindowShouldClose(window):
     width = 680
